@@ -269,12 +269,12 @@ select option{color:var(--text)}
     </div>
     <div id="login-admin-form" class="hidden">
       <div class="field">
-        <label>Username Admin</label>
-        <input type="text" id="a-username" placeholder="contoh: kalapas" value="admin">
+        <label>Username</label>
+        <input type="text" id="a-username" placeholder=>
       </div>
       <div class="field">
         <label>Password</label>
-        <input type="password" id="a-password" placeholder="••••••••" value="admin123">
+        <input type="password" id="a-password" placeholder>
       </div>
       <button class="btn btn-gold mt-2" onclick="loginAdmin()">
         <i class="ti ti-crown"></i> Masuk sebagai Admin
@@ -1159,14 +1159,14 @@ function sendWhatsApp(report){
   const mapsLink = `https://www.google.com/maps?q=${encodeURIComponent(r.gps)}`;
   
   const msg=`*LAPORAN TROLLING*\n*Lapas Kelas IIB Tobelo*\n\n` +
-    `👮 Petugas: ${r.nama_petugas}\n` +
-    `🛡️ Regu: ${r.regu}\n` +
-    `📍 Lokasi: ${r.lokasi}\n` +
-    `🔰 Status: ${r.status}\n` +
-    `📝 Catatan: ${r.catatan}\n` +
-    `📌 GPS: ${r.gps}\n` +
-    `🗺️ Link Peta: ${mapsLink}\n` +
-    `🕐 Waktu: ${r.waktu}\n\n` +
+    `👮 Petugas : ${r.nama_petugas}\n` +
+    `🛡️ Regu : ${r.regu}\n` +
+    `📍 Lokasi : ${r.lokasi}\n` +
+    `🔰 Status : ${r.status}\n` +
+    `📝 Catatan : ${r.catatan}\n` +
+    `📌 GPS : ${r.gps}\n` +
+    `🗺️ Link Peta : ${mapsLink}\n` +
+    `🕐 Waktu : ${r.waktu}\n\n` +
     `_Laporan dikirim otomatis via SiKobar_`;
   window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(msg),'_blank');
 }
@@ -1294,7 +1294,7 @@ function downloadPDF(report){
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(26, 46, 74);
-    doc.text('Bukti Foto', 15, y);
+    doc.text('Dokumentasi', 15, y);
     y += 8;
 
     const imgW = 85;
@@ -1318,7 +1318,7 @@ function downloadPDF(report){
     };
 
     addPhoto(r.photo1, 15, y, 'Foto Area');
-    addPhoto(r.photo2, pw - 15 - imgW, y, 'Foto Tambahan');
+    addPhoto(r.photo2, pw - 15 - imgW, y, 'Foto Area');
     
     const footerY = ph - 20;
     doc.setDrawColor(226, 232, 240);
