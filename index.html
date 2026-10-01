@@ -1335,7 +1335,15 @@ function downloadPDF(report){
     const printDate = `${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}, ${now.getHours().toString().padStart(2,'0')}.${now.getMinutes().toString().padStart(2,'0')}`;
     doc.text(`Dicetak: ${printDate}`, pw - 15, footerY + 4, {align: 'right'});
 
-    doc.save(`${reportNum}.pdf`);
+    // Format jam dan menit dari waktu laporan
+    const jam = String(dateObj.getHours()).padStart(2, '0');
+    const menit = String(dateObj.getMinutes()).padStart(2, '0');
+    
+    // Membersihkan nama lokasi dari spasi atau simbol agar aman dijadikan nama file
+    const namaLokasi = (r.lokasi || 'Tanpa_Lokasi').replace(/[^a-zA-Z0-9]/g, '_');
+    
+    // Menyimpan file dengan format: Laporan_Lokasi_DDMMYYYY_HHMM.pdf
+    doc.save(`Laporan_${namaLokasi}_${d}${m}${y_year}_${jam}${menit}.pdf`);
   } catch(e) {
     alert('PDF gagal dicetak. Pastikan browser mendukung Canvas & DataURL.');
     console.error(e);
