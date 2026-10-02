@@ -54,6 +54,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .field label{display:block;font-size:0.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
 .field input, .field select, .field textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:0.95rem;color:var(--text);background:var(--white);outline:none;transition:border .2s}
 .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--navy)}
+.field input:disabled, .field select:disabled, .field textarea:disabled{background:var(--cream);color:var(--navy);cursor:not-allowed;opacity:0.85;border-color:var(--border)}
 .btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-navy{background:var(--navy);color:var(--white)}
 .btn-navy:hover{background:var(--navy-mid)}
@@ -270,7 +271,7 @@ select option{color:var(--text)}
     <div id="login-admin-form" class="hidden">
       <div class="field">
         <label>Username</label>
-        <input type="text" id="a-username" placeholder=>
+        <input type="text" id="a-username" placeholder>
       </div>
       <div class="field">
         <label>Password</label>
@@ -286,7 +287,7 @@ select option{color:var(--text)}
 
 <div id="screen-petugas" class="screen">
   <div class="topbar">
-    <div class="topbar-brand">
+    <div class="topbar-brand"> 
       <i class="ti ti-shield-lock"></i>
       <span>SI - KOBAR</span>
     </div>
@@ -420,18 +421,20 @@ select option{color:var(--text)}
         <label>Lokasi / Area</label>
         <select id="f-lokasi">
           <option value="">-- Pilih Lokasi --</option>
-          <option>Sel Isolasi</option>
-          <option>Blok Pria</option>
-          <option>Blok Wanita</option>
+          <option>Blok Isolasi</option>
+          <option>Blok A</option>
+          <option>Blok B</option>
+          <option>Blok C</option>
+          <option>Blok D</option>
           <option>Bengkel</option>
-          <option>Dapur & klinik</option>
-          <option>Menara I</option>
-          <option>Menara II</option>
-          <option>Menara III</option>
-          <option>Menara IV</option>
+          <option>Dapur & Klinik</option>
+          <option>Brandgang I</option>
+          <option>Brandgang II</option>
+          <option>Brandgang III</option>
+          <option>Brandgang IV</option>
           <option>Pintu Utama</option>
           <option>Portir Utara</option>
-          <option>Rumdis Kalapas</option>
+          <option>Kediaman Kalapas</option>
         </select>
       </div>
       <div class="field">
@@ -919,18 +922,52 @@ function onScanSuccess(decodedText, decodedResult) {
   }
 }
 
+// Daftar pemetaan URL / Teks QR Code ke Nama Lokasi yang diinginkan
+const mapQRKelokasi = {
+  "https://q.me-qr.com/ypgndf2r": "Blok Isolasi",
+  "https://q.me-qr.com/ljixzq4l": "Blok A",
+  "https://q.me-qr.com/eczzvly1": "Blok B",
+  "https://q.me-qr.com/m0yxgjyv": "Blok C",
+  "https://q.me-qr.com/4s1dyt3w": "Blok D",
+  "https://q.me-qr.com/cbkipuv3": "Bengkel",
+  "https://q.me-qr.com/tglo9cgi": "Dapur & Klinik",
+  "https://q.me-qr.com/pt28c6x4": "Brandgang I",
+  "https://q.me-qr.com/xaffnfbj": "Brandgang II",
+  "https://q.me-qr.com/vptjbyei": "Brandgang III",
+  "https://q.me-qr.com/m5rzaygx": "Brandgang IV",
+  "https://q.me-qr.com/pomwywif": "Pintu Utama",
+  "https://q.me-qr.com/rw2u6gdk": "Portir Utara",
+  "https://q.me-qr.com/uurjhiln": "Kediaman Kalapas",
+};
+
 function lanjutKeForm(decodedText) {
   showScreen('screen-form');
   initForm();
   
+  let rawText = decodedText ? decodedText.trim() : '';
+  
+  // Cek apakah hasil scan ada di dalam daftar pemetaan
+  let locationText = mapQRKelokasi[rawText] || rawText;
+  
   const dropdownLokasi = document.getElementById('f-lokasi');
-  if(decodedText) {
+  if(locationText) {
+    let matched = false;
     for (let i = 0; i < dropdownLokasi.options.length; i++) {
-      if (dropdownLokasi.options[i].text.toLowerCase() === decodedText.toLowerCase()) {
+      if (dropdownLokasi.options[i].text.trim().toLowerCase() === locationText.toLowerCase() ||
+          dropdownLokasi.options[i].value.trim().toLowerCase() === locationText.toLowerCase()) {
         dropdownLokasi.selectedIndex = i;
+        matched = true;
         break;
       }
     }
+    if (!matched && locationText !== '') {
+      const newOpt = document.createElement('option');
+      newOpt.value = locationText;
+      newOpt.textContent = locationText;
+      dropdownLokasi.appendChild(newOpt);
+      dropdownLokasi.value = locationText;
+    }
+    dropdownLokasi.disabled = true; // Kunci input lokasi setelah di-scan
   }
 }
 
@@ -946,7 +983,11 @@ function closeScanner() {
 // ═══════════════════════════
 function initForm(){
   formState={status:null,photo1:null,photo2:null};
-  document.getElementById('f-lokasi').value='';
+  const dropdownLokasi = document.getElementById('f-lokasi');
+  if (dropdownLokasi) {
+    dropdownLokasi.value = '';
+    dropdownLokasi.disabled = false; // Buka kunci saat reset form
+  }
   document.getElementById('f-catatan').value='';
   document.querySelectorAll('.status-opt').forEach(e=>e.className='status-opt');
   document.getElementById('photo-slot-1').className='photo-slot';
@@ -1165,7 +1206,7 @@ function sendWhatsApp(report){
     `🔰 Status : ${r.status}\n` +
     `📝 Catatan : ${r.catatan}\n` +
     `📌 GPS : ${r.gps}\n` +
-    `🗺️ Link Peta : ${mapsLink}\n` +
+    `🗺️ Maps : ${mapsLink}\n` +
     `🕐 Waktu : ${r.waktu}\n\n` +
     `_Laporan dikirim otomatis via SiKobar_`;
   window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(msg),'_blank');
